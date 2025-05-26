@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import TermCard from "@/components/TermCard";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const featuredTerms = [
     {
@@ -58,6 +60,17 @@ const Index = () => {
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto animate-fade-in">
             Изучай математику легко и весело! Здесь ты найдёшь понятные объяснения, примеры и интерактивные задания.
           </p>
+          
+          {!user && (
+            <div className="mb-8">
+              <Button 
+                onClick={() => navigate('/auth')}
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105"
+              >
+                Войти в систему
+              </Button>
+            </div>
+          )}
           
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto mb-12 animate-scale-in">
