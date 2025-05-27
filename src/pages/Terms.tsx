@@ -1,12 +1,13 @@
 
 import { useState, useMemo } from "react";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Header from "@/components/Header";
 import TermCard from "@/components/TermCard";
 import { useSearchParams } from "react-router-dom";
+import { useTerms } from "@/hooks/useTerms";
 
 const Terms = () => {
   const [searchParams] = useSearchParams();
@@ -15,56 +16,29 @@ const Terms = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLetter, setSelectedLetter] = useState("all");
 
-  const allTerms = [
-    {
-      id: "perimeter",
-      title: "Периметр",
-      definition: "Сумма длин всех сторон многоугольника",
-      example: "Периметр квадрата со стороной 5 см = 5 + 5 + 5 + 5 = 20 см",
-      category: "Геометрия"
-    },
-    {
-      id: "fraction",
-      title: "Дробь",
-      definition: "Число, записанное в виде a/b, где a — числитель, b — знаменатель",
-      example: "3/4 означает, что целое разделено на 4 части, взято 3 части",
-      category: "Арифметика"
-    },
-    {
-      id: "diagram",
-      title: "Диаграмма",
-      definition: "Графическое представление данных в виде столбцов, кругов или линий",
-      example: "Круговая диаграмма показывает, сколько учеников выбрали разные предметы",
-      category: "Статистика"
-    },
-    {
-      id: "area",
-      title: "Площадь",
-      definition: "Размер поверхности, измеряемый в квадратных единицах",
-      example: "Площадь прямоугольника со сторонами 4 см и 6 см = 4 × 6 = 24 см²",
-      category: "Геометрия"
-    },
-    {
-      id: "percentage",
-      title: "Процент",
-      definition: "Доля числа, выраженная в сотых частях и обозначаемая знаком %",
-      example: "25% от 100 = 25, потому что 25/100 × 100 = 25",
-      category: "Арифметика"
-    },
-    {
-      id: "average",
-      title: "Среднее арифметическое",
-      definition: "Сумма всех чисел, делённая на их количество",
-      example: "Среднее арифметическое чисел 2, 4, 6 = (2+4+6)/3 = 4",
-      category: "Статистика"
-    }
-  ];
+  const { data: allTerms = [], isLoading, error } = useTerms();
 
-  const categories = ["all", ...Array.from(new Set(allTerms.map(term => term.category)))];
+  // Создаем категории на основе загруженных терминов
+  const categories = useMemo(() => {
+    const termCategories = ["Геометрия", "Арифметика", "Статистика", "Алгебра"];
+    return ["all", ...termCategories];
+  }, []);
+
   const alphabet = "АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ".split("");
 
+  // Преобразуем термины из базы данных в формат для TermCard
+  const transformedTerms = useMemo(() => {
+    return allTerms.map(term => ({
+      id: term.id,
+      title: term.name,
+      definition: term.definition,
+      example: term.example || "Пример будет добавлен позже",
+      category: "Математика" // Пока используем общую категорию
+    }));
+  }, [allTerms]);
+
   const filteredTerms = useMemo(() => {
-    return allTerms.filter(term => {
+    return transformedTerms.filter(term => {
       const matchesSearch = term.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            term.definition.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === "all" || term.category === selectedCategory;
@@ -72,7 +46,29 @@ const Terms = () => {
       
       return matchesSearch && matchesCategory && matchesLetter;
     });
-  }, [searchTerm, selectedCategory, selectedLetter]);
+  }, [transformedTerms, searchTerm, selectedCategory, selectedLetter]);
+
+  if (error) {
+    console.error('Error loading terms:', error);
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">❌</div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">Ошибка загрузки</h3>
+            <p className="text-gray-600 mb-6">Не удалось загрузить термины из базы данных</p>
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full"
+            >
+              Попробовать снова
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -146,40 +142,53 @@ const Terms = () => {
           </div>
         </div>
 
-        {/* Results */}
-        <div className="mb-6">
-          <p className="text-lg text-gray-600">
-            Найдено терминов: <span className="font-bold text-purple-600">{filteredTerms.length}</span>
-          </p>
-        </div>
-
-        {/* Terms Grid */}
-        {filteredTerms.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredTerms.map((term, index) => (
-              <TermCard 
-                key={term.id} 
-                term={term} 
-                delay={index * 100}
-              />
-            ))}
-          </div>
-        ) : (
+        {/* Loading State */}
+        {isLoading && (
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">Термины не найдены</h3>
-            <p className="text-gray-600 mb-6">Попробуй изменить поисковый запрос или фильтры</p>
-            <Button
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedCategory("all");
-                setSelectedLetter("all");
-              }}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full"
-            >
-              Сбросить фильтры
-            </Button>
+            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-purple-600" />
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">Загрузка терминов...</h3>
+            <p className="text-gray-600">Получаем данные из базы данных</p>
           </div>
+        )}
+
+        {/* Results */}
+        {!isLoading && (
+          <>
+            <div className="mb-6">
+              <p className="text-lg text-gray-600">
+                Найдено терминов: <span className="font-bold text-purple-600">{filteredTerms.length}</span>
+              </p>
+            </div>
+
+            {/* Terms Grid */}
+            {filteredTerms.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredTerms.map((term, index) => (
+                  <TermCard 
+                    key={term.id} 
+                    term={term} 
+                    delay={index * 100}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-2xl font-bold text-gray-700 mb-2">Термины не найдены</h3>
+                <p className="text-gray-600 mb-6">Попробуй изменить поисковый запрос или фильтры</p>
+                <Button
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedCategory("all");
+                    setSelectedLetter("all");
+                  }}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full"
+                >
+                  Сбросить фильтры
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
