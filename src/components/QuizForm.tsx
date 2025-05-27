@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +14,8 @@ interface Quiz {
   id: string;
   title: string;
   description: string | null;
+  time_limit_minutes: number | null;
+  difficulty_level: string | null;
 }
 
 interface Question {
@@ -31,6 +34,8 @@ interface QuizFormProps {
 const QuizForm = ({ quiz, onSave, onCancel }: QuizFormProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [timeLimit, setTimeLimit] = useState<number | null>(null);
+  const [difficultyLevel, setDifficultyLevel] = useState('');
   const [questions, setQuestions] = useState<Question[]>([
     { question: '', options: ['', '', '', ''], correct_answer: 0 }
   ]);
@@ -41,6 +46,8 @@ const QuizForm = ({ quiz, onSave, onCancel }: QuizFormProps) => {
     if (quiz) {
       setTitle(quiz.title);
       setDescription(quiz.description || '');
+      setTimeLimit(quiz.time_limit_minutes);
+      setDifficultyLevel(quiz.difficulty_level || '');
       fetchQuestions();
     }
   }, [quiz]);
@@ -106,6 +113,8 @@ const QuizForm = ({ quiz, onSave, onCancel }: QuizFormProps) => {
       const quizData = {
         title,
         description: description || null,
+        time_limit_minutes: timeLimit,
+        difficulty_level: difficultyLevel || null,
       };
 
       let quizId;
@@ -207,6 +216,35 @@ const QuizForm = ({ quiz, onSave, onCancel }: QuizFormProps) => {
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
           />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="timeLimit">Время на тест (минуты)</Label>
+            <Input
+              id="timeLimit"
+              type="number"
+              min="1"
+              value={timeLimit || ''}
+              onChange={(e) => setTimeLimit(e.target.value ? parseInt(e.target.value) : null)}
+              placeholder="Без ограничений"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="difficulty">Сложность (класс)</Label>
+            <Select value={difficultyLevel} onValueChange={setDifficultyLevel}>
+              <SelectTrigger>
+                <SelectValue placeholder="Выберите класс" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1-4">1-4 класс</SelectItem>
+                <SelectItem value="5-6">5-6 класс</SelectItem>
+                <SelectItem value="7-8">7-8 класс</SelectItem>
+                <SelectItem value="9-11">9-11 класс</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

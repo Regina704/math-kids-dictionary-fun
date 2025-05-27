@@ -22,7 +22,7 @@ const Header = () => {
             className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent cursor-pointer"
             onClick={() => navigate('/')}
           >
-            📚 МатСловарь
+            📚 Математический Словарь
           </div>
           
           <div className="flex items-center gap-4">

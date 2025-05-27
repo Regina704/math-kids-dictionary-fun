@@ -68,25 +68,63 @@ export type Database = {
           },
         ]
       }
+      quiz_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          quiz_id: string
+          rating: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          quiz_id: string
+          rating: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          quiz_id?: string
+          rating?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_ratings_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quizzes: {
         Row: {
           created_at: string
           description: string | null
+          difficulty_level: string | null
           id: string
+          time_limit_minutes: number | null
           title: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          difficulty_level?: string | null
           id?: string
+          time_limit_minutes?: number | null
           title: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          difficulty_level?: string | null
           id?: string
+          time_limit_minutes?: number | null
           title?: string
           updated_at?: string
         }
