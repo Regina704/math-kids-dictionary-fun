@@ -3,11 +3,11 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, Settings, Home } from 'lucide-react';
+import { LogOut, Home } from 'lucide-react';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
@@ -36,26 +36,14 @@ const Header = () => {
             </Button>
             
             {user ? (
-              <>
-                {isAdmin && (
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate('/admin')}
-                    className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                  >
-                    <Settings className="w-4 h-4 mr-2" />
-                    Админ панель
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  onClick={handleSignOut}
-                  className="text-red-600 border-red-200 hover:bg-red-50"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Выйти
-                </Button>
-              </>
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="text-red-600 border-red-200 hover:bg-red-50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Выйти
+              </Button>
             ) : (
               <Button
                 onClick={() => navigate('/auth')}
