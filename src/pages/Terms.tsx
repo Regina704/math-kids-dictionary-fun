@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import TermCard from "@/components/TermCard";
 import { useSearchParams } from "react-router-dom";
 import { useTerms } from "@/hooks/useTerms";
+import { useTopics } from "@/hooks/useTopics";
 
 const Terms = () => {
   const [searchParams] = useSearchParams();
@@ -15,8 +16,10 @@ const Terms = () => {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [selectedGrade, setSelectedGrade] = useState("all");
   const [selectedLetter, setSelectedLetter] = useState("all");
+  const [selectedTopic, setSelectedTopic] = useState("all");
 
   const { data: allTerms = [], isLoading, error } = useTerms();
+  const { data: topics = [] } = useTopics();
 
   const alphabet = "АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ".split("");
   const grades = ["all", "5", "6", "7", "8", "9", "10", "11"];
@@ -28,7 +31,8 @@ const Terms = () => {
       title: term.name,
       definition: term.definition,
       example: term.example || "Пример будет добавлен позже",
-      gradeLevel: term.grade_level
+      gradeLevel: term.grade_level,
+      topic: term.topics ? { name: term.topics.name } : undefined
     }));
   }, [allTerms]);
 
@@ -38,10 +42,11 @@ const Terms = () => {
                            term.definition.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesGrade = selectedGrade === "all" || (term.gradeLevel && term.gradeLevel.toString() === selectedGrade);
       const matchesLetter = selectedLetter === "all" || term.title[0].toUpperCase() === selectedLetter;
+      const matchesTopic = selectedTopic === "all" || (term.topic && term.topic.name === selectedTopic);
       
-      return matchesSearch && matchesGrade && matchesLetter;
+      return matchesSearch && matchesGrade && matchesLetter && matchesTopic;
     });
-  }, [transformedTerms, searchTerm, selectedGrade, selectedLetter]);
+  }, [transformedTerms, searchTerm, selectedGrade, selectedLetter, selectedTopic]);
 
   if (error) {
     console.error('Error loading terms:', error);
@@ -108,6 +113,20 @@ const Terms = () => {
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Topic Filter */}
+            <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+              <SelectTrigger className="w-full md:w-48 py-3 rounded-xl border-2 border-purple-200">
+                <Filter className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Тема" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Все темы</SelectItem>
+                {topics.map(topic => (
+                  <SelectItem key={topic.id} value={topic.name}>{topic.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Class Filter Buttons */}
@@ -131,6 +150,32 @@ const Terms = () => {
                   className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
                 >
                   {grade}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Topic Filter Buttons */}
+          <div className="space-y-4 mb-6">
+            <h3 className="text-lg font-semibold text-gray-700 flex items-center">
+              📚 Фильтр по темам
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              <Button
+                variant={selectedTopic === "all" ? "default" : "outline"}
+                onClick={() => setSelectedTopic("all")}
+                className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
+              >
+                Все темы
+              </Button>
+              {topics.map(topic => (
+                <Button
+                  key={topic.id}
+                  variant={selectedTopic === topic.name ? "default" : "outline"}
+                  onClick={() => setSelectedTopic(topic.name)}
+                  className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
+                >
+                  {topic.name}
                 </Button>
               ))}
             </div>
@@ -202,6 +247,7 @@ const Terms = () => {
                     setSearchTerm("");
                     setSelectedGrade("all");
                     setSelectedLetter("all");
+                    setSelectedTopic("all");
                   }}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full"
                 >

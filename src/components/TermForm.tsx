@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTopics } from '@/hooks/useTopics';
 
 interface Term {
   id: string;
@@ -15,6 +16,7 @@ interface Term {
   example: string | null;
   image_url: string | null;
   grade_level: number | null;
+  topic_id: string | null;
 }
 
 interface TermFormProps {
@@ -29,8 +31,10 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
   const [example, setExample] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [gradeLevel, setGradeLevel] = useState<string>('');
+  const [topicId, setTopicId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { data: topics = [] } = useTopics();
 
   useEffect(() => {
     if (term) {
@@ -39,6 +43,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
       setExample(term.example || '');
       setImageUrl(term.image_url || '');
       setGradeLevel(term.grade_level ? term.grade_level.toString() : '');
+      setTopicId(term.topic_id || '');
     }
   }, [term]);
 
@@ -53,6 +58,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
         example: example || null,
         image_url: imageUrl || null,
         grade_level: gradeLevel ? parseInt(gradeLevel) : null,
+        topic_id: topicId || null,
       };
 
       let error;
@@ -124,6 +130,23 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
           onChange={(e) => setExample(e.target.value)}
           rows={2}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="topicId">Тема</Label>
+        <Select value={topicId} onValueChange={setTopicId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Выберите тему" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Без темы</SelectItem>
+            {topics.map(topic => (
+              <SelectItem key={topic.id} value={topic.id}>
+                {topic.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">

@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Edit, Trash2, BookOpen, HelpCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, BookOpen, HelpCircle, Tag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTopics, useDeleteTopic } from '@/hooks/useTopics';
 import TermForm from './TermForm';
 import QuizForm from './QuizForm';
+import TopicForm from './TopicForm';
 
 interface Term {
   id: string;
@@ -16,6 +18,10 @@ interface Term {
   example: string | null;
   image_url: string | null;
   grade_level: number | null;
+  topic_id: string | null;
+  topics?: {
+    name: string;
+  };
 }
 
 interface Quiz {
@@ -33,7 +39,10 @@ const AdminPanel = () => {
   const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null);
   const [showTermForm, setShowTermForm] = useState(false);
   const [showQuizForm, setShowQuizForm] = useState(false);
+  const [showTopicForm, setShowTopicForm] = useState(false);
   const { toast } = useToast();
+  const { data: topics = [] } = useTopics();
+  const deleteTopic = useDeleteTopic();
 
   useEffect(() => {
     fetchTerms();
@@ -43,7 +52,12 @@ const AdminPanel = () => {
   const fetchTerms = async () => {
     const { data, error } = await supabase
       .from('terms')
-      .select('*')
+      .select(`
+        *,
+        topics (
+          name
+        )
+      `)
       .order('name');
     
     if (error) {
@@ -128,18 +142,26 @@ const AdminPanel = () => {
     fetchQuizzes();
   };
 
+  const handleTopicSaved = () => {
+    setShowTopicForm(false);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Панель администратора</h1>
-        <p className="text-gray-600">Управление терминами и тестами</p>
+        <p className="text-gray-600">Управление терминами, темами и тестами</p>
       </div>
 
       <Tabs defaultValue="terms" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="terms" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
             Термины
+          </TabsTrigger>
+          <TabsTrigger value="topics" className="flex items-center gap-2">
+            <Tag className="w-4 h-4" />
+            Темы
           </TabsTrigger>
           <TabsTrigger value="quizzes" className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4" />
@@ -210,6 +232,54 @@ const AdminPanel = () => {
                         variant="destructive"
                         size="sm"
                         onClick={() => deleteTerm(term.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="topics" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold">Управление темами</h2>
+            <Button onClick={() => setShowTopicForm(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Добавить тему
+            </Button>
+          </div>
+
+          {showTopicForm && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Добавить новую тему</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TopicForm onCancel={handleTopicSaved} />
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid gap-4">
+            {topics.map((topic) => (
+              <Card key={topic.id}>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold mb-2">{topic.name}</h3>
+                      {topic.description && (
+                        <p className="text-gray-600">{topic.description}</p>
+                      )}
+                    </div>
+                    <div className="flex gap-2 ml-4">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteTopic.mutate(topic.id)}
+                        disabled={deleteTopic.isPending}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

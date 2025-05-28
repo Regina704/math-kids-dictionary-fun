@@ -9,8 +9,14 @@ export interface Term {
   example: string | null;
   image_url: string | null;
   grade_level: number | null;
+  topic_id: string | null;
   created_at: string;
   updated_at: string;
+  topics?: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
 }
 
 export const useTerms = () => {
@@ -21,7 +27,14 @@ export const useTerms = () => {
       
       const { data, error } = await supabase
         .from('terms')
-        .select('*')
+        .select(`
+          *,
+          topics (
+            id,
+            name,
+            description
+          )
+        `)
         .order('name');
 
       if (error) {

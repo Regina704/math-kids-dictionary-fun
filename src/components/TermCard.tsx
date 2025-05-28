@@ -10,6 +10,9 @@ interface Term {
   definition: string;
   example: string;
   gradeLevel: number | null;
+  topic?: {
+    name: string;
+  };
 }
 
 interface TermCardProps {
@@ -35,15 +38,35 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
     return "📊";
   };
 
+  const getTopicColor = (topicName: string | undefined) => {
+    if (!topicName) return "from-gray-100 to-gray-200";
+    switch (topicName.toLowerCase()) {
+      case 'арифметика': return "from-orange-100 to-orange-200";
+      case 'геометрия': return "from-blue-100 to-blue-200";
+      case 'алгебра': return "from-purple-100 to-purple-200";
+      case 'статистика': return "from-green-100 to-green-200";
+      case 'дроби': return "from-yellow-100 to-yellow-200";
+      case 'проценты': return "from-pink-100 to-pink-200";
+      default: return "from-indigo-100 to-indigo-200";
+    }
+  };
+
   return (
     <Card 
       className="bg-white/80 backdrop-blur-sm border-2 border-purple-100 hover:border-purple-300 transition-all duration-300 hover:scale-105 hover:shadow-xl group animate-fade-in"
       style={{ animationDelay: `${delay}ms` }}
     >
       <CardContent className="p-6">
+        {/* Topic Badge */}
+        {term.topic && (
+          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getTopicColor(term.topic.name)} text-gray-700 text-sm font-semibold mb-3 border border-gray-200`}>
+            📚 {term.topic.name}
+          </div>
+        )}
+
         {/* Grade Badge */}
         {term.gradeLevel && (
-          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getGradeColor(term.gradeLevel)} text-white text-sm font-semibold mb-4`}>
+          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getGradeColor(term.gradeLevel)} text-white text-sm font-semibold mb-4 ${term.topic ? 'ml-2' : ''}`}>
             {getGradeIcon(term.gradeLevel)} {term.gradeLevel} класс
           </div>
         )}

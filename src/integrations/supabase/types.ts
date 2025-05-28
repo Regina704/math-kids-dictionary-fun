@@ -139,6 +139,7 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          topic_id: string | null
           updated_at: string
         }
         Insert: {
@@ -149,6 +150,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          topic_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -158,6 +160,39 @@ export type Database = {
           grade_level?: number | null
           id?: string
           image_url?: string | null
+          name?: string
+          topic_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terms_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topics: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
           name?: string
           updated_at?: string
         }
