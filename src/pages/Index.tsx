@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Search, BookOpen, Users, Award, ArrowRight, Calculator, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,27 +16,33 @@ const Index = () => {
   const featuredTerms = [
     {
       id: "perimeter",
-      title: "Периметр",
+      name: "Периметр",
       definition: "Сумма длин всех сторон многоугольника",
       example: "Периметр квадрата со стороной 5 см = 5 + 5 + 5 + 5 = 20 см",
-      gradeLevel: 5,
-      topic: { name: "Геометрия" }
+      image_url: null,
+      grade_level: 5,
+      topic_id: null,
+      topics: { id: "1", name: "Геометрия", description: null }
     },
     {
       id: "fraction",
-      title: "Дробь",
+      name: "Дробь",
       definition: "Число, записанное в виде a/b, где a — числитель, b — знаменатель",
       example: "3/4 означает, что целое разделено на 4 части, взято 3 части",
-      gradeLevel: 6,
-      topic: { name: "Арифметика" }
+      image_url: null,
+      grade_level: 6,
+      topic_id: null,
+      topics: { id: "2", name: "Арифметика", description: null }
     },
     {
       id: "diagram",
-      title: "Диаграмма",
+      name: "Диаграмма",
       definition: "Графическое представление данных в виде столбцов, кругов или линий",
       example: "Круговая диаграмма показывает, сколько учеников выбрали разные предметы",
-      gradeLevel: 7,
-      topic: { name: "Статистика" }
+      image_url: null,
+      grade_level: 7,
+      topic_id: null,
+      topics: { id: "3", name: "Статистика", description: null }
     }
   ];
 

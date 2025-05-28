@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { Search, Filter, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -28,21 +27,23 @@ const Terms = () => {
   const transformedTerms = useMemo(() => {
     return allTerms.map(term => ({
       id: term.id,
-      title: term.name,
+      name: term.name,
       definition: term.definition,
-      example: term.example || "Пример будет добавлен позже",
-      gradeLevel: term.grade_level,
-      topic: term.topics ? { name: term.topics.name } : undefined
+      example: term.example,
+      image_url: term.image_url,
+      grade_level: term.grade_level,
+      topic_id: term.topic_id,
+      topics: term.topics
     }));
   }, [allTerms]);
 
   const filteredTerms = useMemo(() => {
     return transformedTerms.filter(term => {
-      const matchesSearch = term.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = term.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            term.definition.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesGrade = selectedGrade === "all" || (term.gradeLevel && term.gradeLevel.toString() === selectedGrade);
-      const matchesLetter = selectedLetter === "all" || term.title[0].toUpperCase() === selectedLetter;
-      const matchesTopic = selectedTopic === "all" || (term.topic && term.topic.name === selectedTopic);
+      const matchesGrade = selectedGrade === "all" || (term.grade_level && term.grade_level.toString() === selectedGrade);
+      const matchesLetter = selectedLetter === "all" || term.name[0].toUpperCase() === selectedLetter;
+      const matchesTopic = selectedTopic === "all" || (term.topics && term.topics.name === selectedTopic);
       
       return matchesSearch && matchesGrade && matchesLetter && matchesTopic;
     });
