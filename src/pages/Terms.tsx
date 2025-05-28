@@ -13,18 +13,13 @@ const Terms = () => {
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
   const [searchTerm, setSearchTerm] = useState(initialSearch);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedGrade, setSelectedGrade] = useState("all");
   const [selectedLetter, setSelectedLetter] = useState("all");
 
   const { data: allTerms = [], isLoading, error } = useTerms();
 
-  // Создаем категории на основе загруженных терминов
-  const categories = useMemo(() => {
-    const termCategories = ["Геометрия", "Арифметика", "Статистика", "Алгебра"];
-    return ["all", ...termCategories];
-  }, []);
-
   const alphabet = "АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ".split("");
+  const grades = ["all", "5", "6", "7", "8", "9", "10", "11"];
 
   // Преобразуем термины из базы данных в формат для TermCard
   const transformedTerms = useMemo(() => {
@@ -33,7 +28,7 @@ const Terms = () => {
       title: term.name,
       definition: term.definition,
       example: term.example || "Пример будет добавлен позже",
-      category: "Математика" // Пока используем общую категорию
+      gradeLevel: term.grade_level
     }));
   }, [allTerms]);
 
@@ -41,12 +36,12 @@ const Terms = () => {
     return transformedTerms.filter(term => {
       const matchesSearch = term.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            term.definition.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === "all" || term.category === selectedCategory;
+      const matchesGrade = selectedGrade === "all" || (term.gradeLevel && term.gradeLevel.toString() === selectedGrade);
       const matchesLetter = selectedLetter === "all" || term.title[0].toUpperCase() === selectedLetter;
       
-      return matchesSearch && matchesCategory && matchesLetter;
+      return matchesSearch && matchesGrade && matchesLetter;
     });
-  }, [transformedTerms, searchTerm, selectedCategory, selectedLetter]);
+  }, [transformedTerms, searchTerm, selectedGrade, selectedLetter]);
 
   if (error) {
     console.error('Error loading terms:', error);
@@ -100,19 +95,45 @@ const Terms = () => {
               />
             </div>
             
-            {/* Category Filter */}
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            {/* Grade Filter */}
+            <Select value={selectedGrade} onValueChange={setSelectedGrade}>
               <SelectTrigger className="w-full md:w-48 py-3 rounded-xl border-2 border-purple-200">
                 <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Категория" />
+                <SelectValue placeholder="Класс" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Все категории</SelectItem>
-                {categories.slice(1).map(category => (
-                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                <SelectItem value="all">Все классы</SelectItem>
+                {grades.slice(1).map(grade => (
+                  <SelectItem key={grade} value={grade}>{grade} класс</SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Class Filter Buttons */}
+          <div className="space-y-4 mb-6">
+            <h3 className="text-lg font-semibold text-gray-700 flex items-center">
+              🎓 Фильтр по классам
+            </h3>
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+              <Button
+                variant={selectedGrade === "all" ? "default" : "outline"}
+                onClick={() => setSelectedGrade("all")}
+                className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
+              >
+                Все
+              </Button>
+              {grades.slice(1).map(grade => (
+                <Button
+                  key={grade}
+                  variant={selectedGrade === grade ? "default" : "outline"}
+                  onClick={() => setSelectedGrade(grade)}
+                  className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
+                >
+                  {grade}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {/* Alphabet Filter */}
@@ -179,7 +200,7 @@ const Terms = () => {
                 <Button
                   onClick={() => {
                     setSearchTerm("");
-                    setSelectedCategory("all");
+                    setSelectedGrade("all");
                     setSelectedLetter("all");
                   }}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 rounded-full"

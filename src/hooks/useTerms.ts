@@ -8,6 +8,7 @@ export interface Term {
   definition: string;
   example: string | null;
   image_url: string | null;
+  grade_level: number | null;
   created_at: string;
   updated_at: string;
 }

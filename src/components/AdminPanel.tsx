@@ -15,12 +15,15 @@ interface Term {
   definition: string;
   example: string | null;
   image_url: string | null;
+  grade_level: number | null;
 }
 
 interface Quiz {
   id: string;
   title: string;
   description: string | null;
+  time_limit_minutes: number | null;
+  difficulty_level: string | null;
 }
 
 const AdminPanel = () => {
@@ -179,7 +182,14 @@ const AdminPanel = () => {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold mb-2">{term.name}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold">{term.name}</h3>
+                        {term.grade_level && (
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            {term.grade_level} класс
+                          </span>
+                        )}
+                      </div>
                       <p className="text-gray-600 mb-2">{term.definition}</p>
                       {term.example && (
                         <p className="text-sm text-blue-600 italic">Пример: {term.example}</p>
@@ -246,7 +256,19 @@ const AdminPanel = () => {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold mb-2">{quiz.title}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold">{quiz.title}</h3>
+                        {quiz.difficulty_level && (
+                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                            {quiz.difficulty_level}
+                          </span>
+                        )}
+                        {quiz.time_limit_minutes && (
+                          <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
+                            {quiz.time_limit_minutes} мин
+                          </span>
+                        )}
+                      </div>
                       {quiz.description && (
                         <p className="text-gray-600">{quiz.description}</p>
                       )}

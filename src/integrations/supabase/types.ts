@@ -135,6 +135,7 @@ export type Database = {
           created_at: string
           definition: string
           example: string | null
+          grade_level: number | null
           id: string
           image_url: string | null
           name: string
@@ -144,6 +145,7 @@ export type Database = {
           created_at?: string
           definition: string
           example?: string | null
+          grade_level?: number | null
           id?: string
           image_url?: string | null
           name: string
@@ -153,6 +155,7 @@ export type Database = {
           created_at?: string
           definition?: string
           example?: string | null
+          grade_level?: number | null
           id?: string
           image_url?: string | null
           name?: string

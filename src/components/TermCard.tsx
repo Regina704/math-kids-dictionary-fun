@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
+import { BookOpen, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 interface Term {
   id: string;
   title: string;
   definition: string;
   example: string;
-  category: string;
+  gradeLevel: number | null;
 }
 
 interface TermCardProps {
@@ -21,30 +21,18 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
   const [showExample, setShowExample] = useState(false);
   const [isLearned, setIsLearned] = useState(false);
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "Геометрия":
-        return "from-blue-400 to-blue-600";
-      case "Арифметика":
-        return "from-green-400 to-green-600";
-      case "Статистика":
-        return "from-purple-400 to-purple-600";
-      default:
-        return "from-gray-400 to-gray-600";
-    }
+  const getGradeColor = (grade: number | null) => {
+    if (!grade) return "from-gray-400 to-gray-600";
+    if (grade <= 6) return "from-green-400 to-green-600";
+    if (grade <= 8) return "from-blue-400 to-blue-600";
+    return "from-purple-400 to-purple-600";
   };
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "Геометрия":
-        return "🔺";
-      case "Арифметика":
-        return "🔢";
-      case "Статистика":
-        return "📊";
-      default:
-        return "📐";
-    }
+  const getGradeIcon = (grade: number | null) => {
+    if (!grade) return "📐";
+    if (grade <= 6) return "🌱";
+    if (grade <= 8) return "📏";
+    return "📊";
   };
 
   return (
@@ -53,10 +41,12 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
       style={{ animationDelay: `${delay}ms` }}
     >
       <CardContent className="p-6">
-        {/* Category Badge */}
-        <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getCategoryColor(term.category)} text-white text-sm font-semibold mb-4`}>
-          {getCategoryIcon(term.category)} {term.category}
-        </div>
+        {/* Grade Badge */}
+        {term.gradeLevel && (
+          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getGradeColor(term.gradeLevel)} text-white text-sm font-semibold mb-4`}>
+            {getGradeIcon(term.gradeLevel)} {term.gradeLevel} класс
+          </div>
+        )}
 
         {/* Term Title */}
         <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-purple-600 transition-colors duration-300">

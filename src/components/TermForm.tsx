@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +14,7 @@ interface Term {
   definition: string;
   example: string | null;
   image_url: string | null;
+  grade_level: number | null;
 }
 
 interface TermFormProps {
@@ -26,6 +28,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
   const [definition, setDefinition] = useState('');
   const [example, setExample] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [gradeLevel, setGradeLevel] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -35,6 +38,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
       setDefinition(term.definition);
       setExample(term.example || '');
       setImageUrl(term.image_url || '');
+      setGradeLevel(term.grade_level ? term.grade_level.toString() : '');
     }
   }, [term]);
 
@@ -48,6 +52,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
         definition,
         example: example || null,
         image_url: imageUrl || null,
+        grade_level: gradeLevel ? parseInt(gradeLevel) : null,
       };
 
       let error;
@@ -119,6 +124,22 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
           onChange={(e) => setExample(e.target.value)}
           rows={2}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="gradeLevel">Класс</Label>
+        <Select value={gradeLevel} onValueChange={setGradeLevel}>
+          <SelectTrigger>
+            <SelectValue placeholder="Выберите класс" />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from({ length: 7 }, (_, i) => i + 5).map(grade => (
+              <SelectItem key={grade} value={grade.toString()}>
+                {grade} класс
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">
