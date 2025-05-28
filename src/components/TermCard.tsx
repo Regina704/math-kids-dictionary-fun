@@ -57,20 +57,22 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
 
   return (
     <Card 
-      className="bg-white/80 backdrop-blur-sm border-2 border-purple-100 hover:border-purple-300 transition-all duration-300 hover:scale-105 hover:shadow-xl group animate-fade-in"
+      className={`bg-white/80 backdrop-blur-sm border-2 border-purple-100 hover:border-purple-300 transition-all duration-300 hover:scale-105 hover:shadow-xl group animate-fade-in flex flex-col ${
+        showExample ? 'h-auto' : 'h-[400px]'
+      }`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-6 flex flex-col h-full">
         {/* Topic Badge */}
         {term.topics && (
-          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getTopicColor(term.topics.name)} text-gray-700 text-sm font-semibold mb-3 border border-gray-200`}>
+          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getTopicColor(term.topics.name)} text-gray-700 text-sm font-semibold mb-3 border border-gray-200 w-fit`}>
             📚 {term.topics.name}
           </div>
         )}
 
         {/* Grade Badge */}
         {term.grade_level && (
-          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getGradeColor(term.grade_level)} text-white text-sm font-semibold mb-4 ${term.topics ? 'ml-2' : ''}`}>
+          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getGradeColor(term.grade_level)} text-white text-sm font-semibold mb-4 w-fit ${term.topics ? 'ml-2' : ''}`}>
             {getGradeIcon(term.grade_level)} {term.grade_level} класс
           </div>
         )}
@@ -81,46 +83,48 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
         </h3>
 
         {/* Definition */}
-        <p className="text-gray-700 text-lg leading-relaxed mb-4">
-          {term.definition}
-        </p>
+        <div className="flex-1 flex flex-col">
+          <p className="text-gray-700 text-lg leading-relaxed mb-4 flex-1">
+            {term.definition}
+          </p>
 
-        {/* Example Toggle */}
-        {term.example && (
-          <div className="space-y-3">
-            <Button
-              variant="outline"
-              onClick={() => setShowExample(!showExample)}
-              className="w-full flex items-center justify-center space-x-2 border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300"
-            >
-              {showExample ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              <span>{showExample ? "Скрыть пример" : "Показать пример"}</span>
-            </Button>
+          {/* Example Toggle */}
+          {term.example && (
+            <div className="space-y-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowExample(!showExample)}
+                className="w-full flex items-center justify-center space-x-2 border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300"
+              >
+                {showExample ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <span>{showExample ? "Скрыть пример" : "Показать пример"}</span>
+              </Button>
 
-            {/* Example with Image */}
-            {showExample && (
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border-l-4 border-orange-400 animate-fade-in space-y-3">
-                <p className="text-gray-700 italic">
-                  <strong>Пример:</strong> {term.example}
-                </p>
-                
-                {/* Image */}
-                {term.image_url && (
-                  <div className="mt-3">
-                    <img 
-                      src={term.image_url} 
-                      alt={`Изображение для термина ${term.name}`}
-                      className="max-w-full h-auto rounded-lg shadow-md border border-orange-200"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+              {/* Example with Image */}
+              {showExample && (
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border-l-4 border-orange-400 animate-fade-in space-y-3">
+                  <p className="text-gray-700 italic">
+                    <strong>Пример:</strong> {term.example}
+                  </p>
+                  
+                  {/* Image */}
+                  {term.image_url && (
+                    <div className="mt-3">
+                      <img 
+                        src={term.image_url} 
+                        alt={`Изображение для термина ${term.name}`}
+                        className="max-w-full h-auto rounded-lg shadow-md border border-orange-200"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Learn Button */}
         <div className="mt-4 pt-4 border-t border-purple-100">
