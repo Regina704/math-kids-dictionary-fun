@@ -6,6 +6,8 @@ export interface Quiz {
   id: string;
   title: string;
   description: string | null;
+  time_limit_minutes: number | null;
+  difficulty_level: string | null;
   created_at: string;
   updated_at: string;
 }
