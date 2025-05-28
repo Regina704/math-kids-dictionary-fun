@@ -31,7 +31,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
   const [example, setExample] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [gradeLevel, setGradeLevel] = useState<string>('');
-  const [topicId, setTopicId] = useState<string>('');
+  const [topicId, setTopicId] = useState<string>('none');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { data: topics = [] } = useTopics();
@@ -43,7 +43,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
       setExample(term.example || '');
       setImageUrl(term.image_url || '');
       setGradeLevel(term.grade_level ? term.grade_level.toString() : '');
-      setTopicId(term.topic_id || '');
+      setTopicId(term.topic_id || 'none');
     }
   }, [term]);
 
@@ -58,7 +58,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
         example: example || null,
         image_url: imageUrl || null,
         grade_level: gradeLevel ? parseInt(gradeLevel) : null,
-        topic_id: topicId || null,
+        topic_id: topicId === 'none' ? null : topicId,
       };
 
       let error;
@@ -139,7 +139,7 @@ const TermForm = ({ term, onSave, onCancel }: TermFormProps) => {
             <SelectValue placeholder="Выберите тему" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Без темы</SelectItem>
+            <SelectItem value="none">Без темы</SelectItem>
             {topics.map(topic => (
               <SelectItem key={topic.id} value={topic.id}>
                 {topic.name}
