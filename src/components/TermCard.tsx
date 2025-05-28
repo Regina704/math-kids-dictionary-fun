@@ -6,12 +6,16 @@ import { BookOpen, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 interface Term {
   id: string;
-  title: string;
+  name: string;
   definition: string;
-  example: string;
-  gradeLevel: number | null;
-  topic?: {
+  example: string | null;
+  image_url: string | null;
+  grade_level: number | null;
+  topic_id: string | null;
+  topics?: {
+    id: string;
     name: string;
+    description: string | null;
   };
 }
 
@@ -58,22 +62,22 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
     >
       <CardContent className="p-6">
         {/* Topic Badge */}
-        {term.topic && (
-          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getTopicColor(term.topic.name)} text-gray-700 text-sm font-semibold mb-3 border border-gray-200`}>
-            📚 {term.topic.name}
+        {term.topics && (
+          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getTopicColor(term.topics.name)} text-gray-700 text-sm font-semibold mb-3 border border-gray-200`}>
+            📚 {term.topics.name}
           </div>
         )}
 
         {/* Grade Badge */}
-        {term.gradeLevel && (
-          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getGradeColor(term.gradeLevel)} text-white text-sm font-semibold mb-4 ${term.topic ? 'ml-2' : ''}`}>
-            {getGradeIcon(term.gradeLevel)} {term.gradeLevel} класс
+        {term.grade_level && (
+          <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${getGradeColor(term.grade_level)} text-white text-sm font-semibold mb-4 ${term.topics ? 'ml-2' : ''}`}>
+            {getGradeIcon(term.grade_level)} {term.grade_level} класс
           </div>
         )}
 
         {/* Term Title */}
         <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-purple-600 transition-colors duration-300">
-          {term.title}
+          {term.name}
         </h3>
 
         {/* Definition */}
@@ -82,25 +86,41 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
         </p>
 
         {/* Example Toggle */}
-        <div className="space-y-3">
-          <Button
-            variant="outline"
-            onClick={() => setShowExample(!showExample)}
-            className="w-full flex items-center justify-center space-x-2 border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300"
-          >
-            {showExample ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span>{showExample ? "Скрыть пример" : "Показать пример"}</span>
-          </Button>
+        {term.example && (
+          <div className="space-y-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowExample(!showExample)}
+              className="w-full flex items-center justify-center space-x-2 border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300"
+            >
+              {showExample ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              <span>{showExample ? "Скрыть пример" : "Показать пример"}</span>
+            </Button>
 
-          {/* Example */}
-          {showExample && (
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border-l-4 border-orange-400 animate-fade-in">
-              <p className="text-gray-700 italic">
-                <strong>Пример:</strong> {term.example}
-              </p>
-            </div>
-          )}
-        </div>
+            {/* Example with Image */}
+            {showExample && (
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border-l-4 border-orange-400 animate-fade-in space-y-3">
+                <p className="text-gray-700 italic">
+                  <strong>Пример:</strong> {term.example}
+                </p>
+                
+                {/* Image */}
+                {term.image_url && (
+                  <div className="mt-3">
+                    <img 
+                      src={term.image_url} 
+                      alt={`Изображение для термина ${term.name}`}
+                      className="max-w-full h-auto rounded-lg shadow-md border border-orange-200"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Learn Button */}
         <div className="mt-4 pt-4 border-t border-purple-100">
