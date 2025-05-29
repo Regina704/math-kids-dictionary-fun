@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Edit, Trash2, BookOpen, HelpCircle, Tag } from 'lucide-react';
+import { Plus, Edit, Trash2, BookOpen, HelpCircle, Tag, GraduationCap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTopics, useDeleteTopic } from '@/hooks/useTopics';
+import { useGradeLevels, useDeleteGradeLevel } from '@/hooks/useGradeLevels';
 import TermForm from './TermForm';
 import QuizForm from './QuizForm';
 import TopicForm from './TopicForm';
+import GradeLevelForm from './GradeLevelForm';
 
 interface Term {
   id: string;
@@ -40,9 +42,12 @@ const AdminPanel = () => {
   const [showTermForm, setShowTermForm] = useState(false);
   const [showQuizForm, setShowQuizForm] = useState(false);
   const [showTopicForm, setShowTopicForm] = useState(false);
+  const [showGradeLevelForm, setShowGradeLevelForm] = useState(false);
   const { toast } = useToast();
   const { data: topics = [] } = useTopics();
+  const { data: gradeLevels = [] } = useGradeLevels();
   const deleteTopic = useDeleteTopic();
+  const deleteGradeLevel = useDeleteGradeLevel();
 
   useEffect(() => {
     fetchTerms();
@@ -146,15 +151,19 @@ const AdminPanel = () => {
     setShowTopicForm(false);
   };
 
+  const handleGradeLevelSaved = () => {
+    setShowGradeLevelForm(false);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Панель администратора</h1>
-        <p className="text-gray-600">Управление терминами, темами и тестами</p>
+        <p className="text-gray-600">Управление терминами, темами, классами и тестами</p>
       </div>
 
       <Tabs defaultValue="terms" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="terms" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
             Термины
@@ -162,6 +171,10 @@ const AdminPanel = () => {
           <TabsTrigger value="topics" className="flex items-center gap-2">
             <Tag className="w-4 h-4" />
             Темы
+          </TabsTrigger>
+          <TabsTrigger value="grades" className="flex items-center gap-2">
+            <GraduationCap className="w-4 h-4" />
+            Классы
           </TabsTrigger>
           <TabsTrigger value="quizzes" className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4" />
@@ -280,6 +293,52 @@ const AdminPanel = () => {
                         size="sm"
                         onClick={() => deleteTopic.mutate(topic.id)}
                         disabled={deleteTopic.isPending}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="grades" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold">Управление классами</h2>
+            <Button onClick={() => setShowGradeLevelForm(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Добавить класс
+            </Button>
+          </div>
+
+          {showGradeLevelForm && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Добавить новый класс</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <GradeLevelForm onCancel={handleGradeLevelSaved} />
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid gap-4">
+            {gradeLevels.map((grade) => (
+              <Card key={grade.id}>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold mb-2">{grade.name}</h3>
+                      <p className="text-gray-600">Уровень: {grade.level}</p>
+                    </div>
+                    <div className="flex gap-2 ml-4">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteGradeLevel.mutate(grade.id)}
+                        disabled={deleteGradeLevel.isPending}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

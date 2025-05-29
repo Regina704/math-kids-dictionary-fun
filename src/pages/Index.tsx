@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Search, BookOpen, Users, Award, ArrowRight, Calculator, Target, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,7 @@ const Index = () => {
             📚 Математический Словарь
           </h1>
           <p className="text-xl md:text-2xl text-gray-700 mb-8 animate-fade-in">
-            Интерактивный словарь математических терминов для школьников 5-7 классов
+            Интерактивный словарь математических терминов для школьников
           </p>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto animate-fade-in">
             Изучай математику легко и весело! Здесь ты найдёшь понятные объяснения, примеры и интерактивные задания.

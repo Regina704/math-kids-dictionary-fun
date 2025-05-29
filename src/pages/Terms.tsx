@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { Search, Filter, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import TermCard from "@/components/TermCard";
 import { useSearchParams } from "react-router-dom";
 import { useTerms } from "@/hooks/useTerms";
 import { useTopics } from "@/hooks/useTopics";
+import { useGradeLevels } from "@/hooks/useGradeLevels";
 
 const Terms = () => {
   const [searchParams] = useSearchParams();
@@ -19,9 +21,9 @@ const Terms = () => {
 
   const { data: allTerms = [], isLoading, error } = useTerms();
   const { data: topics = [] } = useTopics();
+  const { data: gradeLevels = [] } = useGradeLevels();
 
   const alphabet = "АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ".split("");
-  const grades = ["all", "5", "6", "7", "8", "9", "10", "11"];
 
   // Преобразуем термины из базы данных в формат для TermCard
   const transformedTerms = useMemo(() => {
@@ -109,8 +111,8 @@ const Terms = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Все классы</SelectItem>
-                {grades.slice(1).map(grade => (
-                  <SelectItem key={grade} value={grade}>{grade} класс</SelectItem>
+                {gradeLevels.map(grade => (
+                  <SelectItem key={grade.id} value={grade.level.toString()}>{grade.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -143,14 +145,14 @@ const Terms = () => {
               >
                 Все
               </Button>
-              {grades.slice(1).map(grade => (
+              {gradeLevels.map(grade => (
                 <Button
-                  key={grade}
-                  variant={selectedGrade === grade ? "default" : "outline"}
-                  onClick={() => setSelectedGrade(grade)}
+                  key={grade.id}
+                  variant={selectedGrade === grade.level.toString() ? "default" : "outline"}
+                  onClick={() => setSelectedGrade(grade.level.toString())}
                   className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
                 >
-                  {grade}
+                  {grade.level}
                 </Button>
               ))}
             </div>
