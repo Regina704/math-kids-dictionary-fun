@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,7 @@ const Quiz = () => {
   const { data: quizzes = [] } = useQuizzes();
   const { data: questions = [] } = useQuizQuestions(selectedQuiz);
   const { user } = useAuth();
-  const ratingMutation = useQuizRating();
+  const { submitRating } = useQuizRating(selectedQuiz || "");
 
   const selectedQuizData = quizzes.find(q => q.id === selectedQuiz);
 
@@ -93,11 +92,7 @@ const Quiz = () => {
 
   const handleRatingSubmit = () => {
     if (selectedQuiz && userRating > 0) {
-      ratingMutation.mutate({
-        quiz_id: selectedQuiz,
-        rating: userRating,
-        user_id: user?.id || null
-      });
+      submitRating.mutate(userRating);
     }
   };
 
@@ -204,7 +199,7 @@ const Quiz = () => {
                     ))}
                   </div>
                   {userRating > 0 && (
-                    <Button onClick={handleRatingSubmit} disabled={ratingMutation.isPending}>
+                    <Button onClick={handleRatingSubmit} disabled={submitRating.isPending}>
                       Отправить оценку
                     </Button>
                   )}
