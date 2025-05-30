@@ -8,44 +8,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import TermCard from "@/components/TermCard";
+import { useTerms } from "@/hooks/useTerms";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { data: allTerms = [], isLoading } = useTerms();
 
-  const featuredTerms = [
-    {
-      id: "perimeter",
-      name: "Периметр",
-      definition: "Сумма длин всех сторон многоугольника",
-      example: "Периметр квадрата со стороной 5 см = 5 + 5 + 5 + 5 = 20 см",
-      image_url: null,
-      grade_level: 5,
-      topic_id: null,
-      topics: { id: "1", name: "Геометрия", description: null }
-    },
-    {
-      id: "fraction",
-      name: "Дробь",
-      definition: "Число, записанное в виде a/b, где a — числитель, b — знаменатель",
-      example: "3/4 означает, что целое разделено на 4 части, взято 3 части",
-      image_url: null,
-      grade_level: 6,
-      topic_id: null,
-      topics: { id: "2", name: "Арифметика", description: null }
-    },
-    {
-      id: "diagram",
-      name: "Диаграмма",
-      definition: "Графическое представление данных в виде столбцов, кругов или линий",
-      example: "Круговая диаграмма показывает, сколько учеников выбрали разные предметы",
-      image_url: null,
-      grade_level: 7,
-      topic_id: null,
-      topics: { id: "3", name: "Статистика", description: null }
-    }
-  ];
+  // Получаем первые 3 термина для отображения на главной странице
+  const featuredTerms = allTerms.slice(0, 3);
 
   const handleSearch = () => {
     if (searchTerm.trim()) {
@@ -134,25 +106,48 @@ const Index = () => {
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           🌟 Популярные термины
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {featuredTerms.map((term, index) => (
-            <TermCard 
-              key={term.id} 
-              term={term} 
-              delay={index * 200}
-            />
-          ))}
-        </div>
         
-        <div className="text-center mt-12">
-          <Button 
-            onClick={() => navigate('/terms')}
-            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105"
-          >
-            Смотреть все термины
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </div>
+        {isLoading ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">📚</div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">Загрузка терминов...</h3>
+            <p className="text-gray-600">Получаем данные из базы данных</p>
+          </div>
+        ) : featuredTerms.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredTerms.map((term, index) => (
+                <TermCard 
+                  key={term.id} 
+                  term={term} 
+                  delay={index * 200}
+                />
+              ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <Button 
+                onClick={() => navigate('/terms')}
+                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105"
+              >
+                Смотреть все термины
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">📖</div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">Термины не найдены</h3>
+            <p className="text-gray-600 mb-6">В базе данных пока нет терминов для отображения</p>
+            <Button 
+              onClick={() => navigate('/admin')}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:scale-105"
+            >
+              Перейти в админ панель
+            </Button>
+          </div>
+        )}
       </section>
 
       {/* Why Use Section */}
