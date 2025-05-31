@@ -82,10 +82,12 @@ const TermCard = ({ term, delay = 0 }: TermCardProps) => {
           {term.name}
         </h3>
 
-        {/* Definition */}
-        <div className="flex-1 flex flex-col">
-          <p className="text-gray-700 text-lg leading-relaxed mb-4 flex-1">
-            {term.definition}
+        {/* Definition with text overflow handling */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <p className="text-gray-700 text-lg leading-relaxed mb-4 flex-1 overflow-hidden">
+            <span className="line-clamp-4">
+              {term.definition}
+            </span>
           </p>
 
           {/* Example Toggle */}

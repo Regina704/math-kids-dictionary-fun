@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { Search, Filter, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -163,11 +162,11 @@ const Terms = () => {
             <h3 className="text-lg font-semibold text-gray-700 flex items-center">
               📚 Фильтр по темам
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant={selectedTopic === "all" ? "default" : "outline"}
                 onClick={() => setSelectedTopic("all")}
-                className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
+                className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110 whitespace-nowrap"
               >
                 Все темы
               </Button>
@@ -176,7 +175,7 @@ const Terms = () => {
                   key={topic.id}
                   variant={selectedTopic === topic.name ? "default" : "outline"}
                   onClick={() => setSelectedTopic(topic.name)}
-                  className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
+                  className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110 whitespace-nowrap"
                 >
                   {topic.name}
                 </Button>

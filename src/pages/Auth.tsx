@@ -127,14 +127,6 @@ const Auth = () => {
               {isLogin ? 'Нет аккаунта? Зарегистрируйтесь' : 'Уже есть аккаунт? Войдите'}
             </Button>
           </div>
-
-          {isLogin && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-700 font-medium">Для входа как администратор:</p>
-              <p className="text-sm text-blue-600">Email: reg07042002@example.com</p>
-              <p className="text-sm text-blue-600">Пароль: 704020</p>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
