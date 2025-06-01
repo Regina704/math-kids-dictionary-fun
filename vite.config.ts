@@ -5,6 +5,10 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: '/math-kids-dictionary-fun/',
+  build: {
+    sourcemap: true, // это ключ
+  },
   server: {
     host: "::",
     port: 8080,

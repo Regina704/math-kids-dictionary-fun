@@ -21,7 +21,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="/math-kids-dictionary-fun">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/terms" element={<Terms />} />
