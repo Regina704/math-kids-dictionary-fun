@@ -3,11 +3,11 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, Home } from 'lucide-react';
+import { LogOut, Home, Settings } from 'lucide-react';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
@@ -34,6 +34,17 @@ const Header = () => {
               <Home className="w-4 h-4 mr-2" />
               Главная
             </Button>
+            
+            {user && isAdmin && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/admin')}
+                className="text-purple-700 hover:text-purple-900"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Админ панель
+              </Button>
+            )}
             
             {user ? (
               <Button
