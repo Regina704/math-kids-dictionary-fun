@@ -50,6 +50,12 @@ const Terms = () => {
     });
   }, [transformedTerms, searchTerm, selectedGrade, selectedLetter, selectedTopic]);
 
+  // Функция для сокращения текста
+  const truncateText = (text: string, maxLength: number = 20) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
   if (error) {
     console.error('Error loading terms:', error);
     return (
@@ -166,7 +172,7 @@ const Terms = () => {
               <Button
                 variant={selectedTopic === "all" ? "default" : "outline"}
                 onClick={() => setSelectedTopic("all")}
-                className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110 whitespace-nowrap"
+                className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
               >
                 Все темы
               </Button>
@@ -175,9 +181,10 @@ const Terms = () => {
                   key={topic.id}
                   variant={selectedTopic === topic.name ? "default" : "outline"}
                   onClick={() => setSelectedTopic(topic.name)}
-                  className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110 whitespace-nowrap"
+                  className="h-10 px-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-110"
+                  title={topic.name} // Показывает полное название при наведении
                 >
-                  {topic.name}
+                  {truncateText(topic.name)}
                 </Button>
               ))}
             </div>
